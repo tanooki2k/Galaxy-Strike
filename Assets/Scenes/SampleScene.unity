@@ -444,6 +444,10 @@ MonoBehaviour:
   xClampRange: 15
   yClampRange: 9
   screenCenterOffset: {x: 0, y: 2}
+  controlPitchFactor: 25
+  controlYawFactor: 0.75
+  controlRollFactor: 30
+  rotationSpeed: 8
 --- !u!1 &444098225
 GameObject:
   m_ObjectHideFlags: 0
