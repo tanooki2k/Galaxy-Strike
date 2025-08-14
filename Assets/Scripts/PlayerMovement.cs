@@ -14,8 +14,25 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float rotationSpeed = 8f;
 
 
-    Vector2 _movement;
+    private StartPlaying _startPlaying;
+    private Vector2 _movement;
+    private Vector3 _initialRotation;
+
+    void Start()
+    {
+        _startPlaying = GetComponent<StartPlaying>();
+        _initialRotation = transform.rotation.eulerAngles;
+    }
+
     void Update()
+    {
+        if (_startPlaying.isEnabled)
+        {
+            ProcessTransform();
+        }
+    }
+
+    private void ProcessTransform()
     {
         ProcessTranslation();
         ProcessRotation();
@@ -30,23 +47,26 @@ public class PlayerMovement : MonoBehaviour
     {
         float xOffset = _movement.x * controlSpeed * Time.deltaTime;
         float rawXPos = transform.localPosition.x + xOffset;
-        float clampedXPos = Mathf.Clamp(rawXPos, -xClampRange + screenCenterOffset.x, xClampRange + screenCenterOffset.x);
-        
+        float clampedXPos =
+            Mathf.Clamp(rawXPos, -xClampRange + screenCenterOffset.x, xClampRange + screenCenterOffset.x);
+
         float yOffset = _movement.y * controlSpeed * Time.deltaTime;
         float rawYPos = transform.localPosition.y + yOffset;
-        float clampedYPos = Mathf.Clamp(rawYPos, -yClampRange + screenCenterOffset.y, yClampRange + screenCenterOffset.y);
-        
+        float clampedYPos =
+            Mathf.Clamp(rawYPos, -yClampRange + screenCenterOffset.y, yClampRange + screenCenterOffset.y);
+
         transform.localPosition = new Vector3(clampedXPos, clampedYPos, 0f);
     }
 
     void ProcessRotation()
     {
         float pitch = -controlPitchFactor * _movement.y;
-        float yaw =  controlYawFactor * transform.localPosition.x;
+        float yaw = controlYawFactor * transform.localPosition.x;
         float roll = -controlRollFactor * _movement.x;
-        
-        Quaternion targetRotation = Quaternion.Euler(pitch, yaw, roll);
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, targetRotation, rotationSpeed * Time.deltaTime);
-        
+
+        Quaternion targetRotation = Quaternion.Euler(pitch + _initialRotation.x, yaw + _initialRotation.y,
+            roll + _initialRotation.z);
+        transform.localRotation =
+            Quaternion.Lerp(transform.localRotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 }

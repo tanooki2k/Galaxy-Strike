@@ -8,24 +8,43 @@ public class PlayerWeapon : MonoBehaviour
     [SerializeField] Transform targetPoint;
     [SerializeField] float targetDistance;
     
-    bool _isFiring;
-
+    private bool _isFiring;
+    private StartPlaying _startPlaying;
+    
     void Start()
     {
         Cursor.visible = false;
+        _startPlaying = GetComponent<StartPlaying>();
+        DisableLasers();
+
     }
-    
+
     void Update()
     {
-        ProcessFiring();
         MoveCrosshair();
-        MoveTargetPoint();
-        AimLasers();
+        if (_startPlaying.isEnabled)
+        {
+            ProcessFiring();
+            MoveTargetPoint();
+            AimLasers();
+        }
     }
 
     public void OnFire(InputValue value)
     {
-        _isFiring = value.isPressed;
+        if (_startPlaying.isEnabled)
+        {
+            _isFiring = value.isPressed;
+        }
+    }
+
+    private void DisableLasers()
+    {
+        foreach (GameObject laser in lasers)
+        {
+            var emissionModule = laser.GetComponent<ParticleSystem>().emission;
+            emissionModule.enabled = false;
+        }
     }
 
     private void ProcessFiring()
